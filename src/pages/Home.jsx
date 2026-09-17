@@ -1,12 +1,11 @@
 import NavCard from "../components/NavCard";
+import Hero from "../components/Hero";
 
 function Home() {
     return (
         <main className="home">
-            <header className="header">
-                <h1>Welcome to Navigating Drosdick</h1>
-            </header>
-            <section className="menu-grid">
+            <Hero title="Navigating Drosdick Hall" description="Explore Villanova University's home for the College of Engineering." image="/images/learningCommons.jpg" />
+            <section className="menu-grid" id="resources">
                 <NavCard title="Directory" description="Explore the directory of resources." link="/directory" image="/images/learningCommons.jpg" />
             </section>
         </main>
