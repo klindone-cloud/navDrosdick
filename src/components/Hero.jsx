@@ -13,7 +13,6 @@ function Hero({ title, description, image }) {
                     <span aria-hidden="true">-&gt;</span>
                 </a>
             </div>
-            <span className="hero-label">Learning Commons</span>
         </section>
     );
 }

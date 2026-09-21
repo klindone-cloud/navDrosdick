@@ -37,9 +37,9 @@
     --bg: #16171d;
     --border: #2e303a;
     --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
+    --accent: #0c0f9c;
+    --accent-bg: rgba(12, 15, 156, 0.15);
+    --accent-border: rgba(12, 15, 156, 0.5);
     --social-bg: rgba(47, 48, 58, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
@@ -52,6 +52,69 @@
 
 body {
   margin: 0;
+}
+
+.navbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  padding: 16px clamp(20px, 5vw, 56px);
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.navbar-logo,
+.navbar-links {
+  min-width: 0;
+}
+
+.logo {
+  color: var(--text-h);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nav-menu {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  justify-content: end;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-item a {
+  display: block;
+  padding: 8px 12px;
+  color: var(--text);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+}
+
+.nav-item a:hover,
+.nav-item a:focus-visible {
+  color: var(--text-h);
+  background: var(--accent-bg);
+}
+
+@media (max-width: 720px) {
+  .navbar {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .nav-menu {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+  }
 }
 
 h1,
@@ -121,7 +184,7 @@ code {
   position: relative;
   display: flex;
   align-items: stretch;
-  min-height: 500px;
+  min-height: 200px;
   overflow: hidden;
   border-bottom: 1px solid var(--border);
   text-align: left;
@@ -179,7 +242,7 @@ code {
 }
 
 .hero-action:hover {
-  background: rgba(89, 116, 212, 0.2);
+  background: rgba(12, 15, 156, 0.2);
   transform: translateY(-2px);
 }
 
@@ -202,6 +265,7 @@ code {
 @media (max-width: 720px) {
   .hero {
     min-height: 520px;
+    background-size: cover;
     background-position: 62% center;
     background-image: linear-gradient(0deg, rgba(8, 6, 13, 0.9) 0%, rgba(8, 6, 13, 0.4) 100%), var(--hero-image);
   }
