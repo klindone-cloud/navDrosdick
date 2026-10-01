@@ -6,7 +6,8 @@ import {
 	MapContainer,
 	Popup,
 } from "react-leaflet";
-
+import {useMapEvents} from "react-leaflet";
+import CoordinatePicker from "../components/CoordinatePicker";
 import "leaflet/dist/leaflet.css";
 
 const MAP_WIDTH = 1600;
@@ -75,9 +76,9 @@ const buildingRooms = {
 
 function Maps() {
 	const [selectedFloor, setSelectedFloor] = useState(1);
-
+	
 	const visibleRooms = useMemo(() => ({
-		buildingRooms,
+		...buildingRooms,
 		features: buildingRooms.features.filter(
 			(room) => room.properties.level === selectedFloor,
 		),
@@ -90,6 +91,9 @@ function Maps() {
 			`<strong>${feature.properties.name}</strong><br/>
 			Floor ${feature.properties.level}<br/>
 			${feature.properties.type}`);
+	}
+	function handleCoordinateChange(coordinate) {
+		console.log(`Map point: [${coordinate.x}, ${coordinate.y}]`);
 	}
 
 	return (
@@ -114,18 +118,19 @@ function Maps() {
 					})}
 				</div>
 			</header>
-
 			<MapContainer
 				crs={L.CRS.Simple}
 				bounds={mapBounds}
 				minZoom={-2}
-				maxZoom={3}
+				maxZoom={4}
 				maxBounds={mapBounds}
 				maxBoundsViscosity={1}
 				className="indoor-map"
 			>
 				<ImageOverlay key={'image-${selectedFloor}'} url={floorPlans[selectedFloor]} bounds={mapBounds} />
-				<GeoJSON key={'rooms-${selectedFloor}'} data={visibleRooms} style={{ color: "#172554", weight: 2, fillColor: "#3b82f6", fillOpacity: 0.2,}} onEachFeature={addRoomPopup} />
+				<CoordinatePicker imageHeight={MAP_HEIGHT} onCoordinateChange={handleCoordinateChange} />
+				
+				{/*<GeoJSON key={'rooms-${selectedFloor}'} data={visibleRooms} style={{ color: "#172554", weight: 2, fillColor: "#3b82f6", fillOpacity: 0.2,}} onEachFeature={addRoomPopup} />*/}
 			</MapContainer>
 		</main>
 	);

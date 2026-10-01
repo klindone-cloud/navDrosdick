@@ -458,6 +458,17 @@ code {
   background: var(--accent);
 }
 
+.coordinate-display {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 8px 14px;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #f8fafc;
+  font-family: monospace;
+}
+
 .indoor-map {
   width: 100%;
   height: min(70vh, 700px);
