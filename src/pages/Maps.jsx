@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import L from "leaflet";
 import {
 	GeoJSON,
@@ -6,7 +6,9 @@ import {
 	MapContainer,
 	Popup,
 } from "react-leaflet";
-
+import {useMapEvents} from "react-leaflet";
+import CoordinatePicker from "../components/CoordinatePicker";
+import { parseRoomsCSV} from "../data/createRooms";
 import "leaflet/dist/leaflet.css";
 
 const MAP_WIDTH = 1600;
@@ -20,7 +22,7 @@ const mapBounds = [
 const floorPlans = {
 	1: "/floors/DrosdickFirstFloor.png"
 };
-
+/*
 const buildingRooms = {
 	type: "FeatureCollection",
 	features: [
@@ -72,17 +74,49 @@ const buildingRooms = {
 		}
 	]
 };
+*/
+const emptyRooms = {
+	type: "FeatureCollection",
+	features: []
+};
 
 function Maps() {
 	const [selectedFloor, setSelectedFloor] = useState(1);
+	const [buildingRooms, setBuildingRooms] = useState(emptyRooms);
 
+	useEffect(() => {
+		async function loadRooms() {
+			try {
+				const response = await fetch("../data/FirstFloor.csv");
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+
+				const csvText = await response.text();
+
+if (csvText.trimStart().startsWith("<")) {
+    throw new Error("Got HTML instead of CSV; check that the file is in public/data/");
+}
+				console.log("Loaded CSV text:", csvText);
+				const rooms = parseRoomsCSV(csvText, MAP_HEIGHT);
+
+				console.log("Parsed room data:", rooms);
+				setBuildingRooms(rooms);
+			} catch (error) {
+				console.error("Error loading room data:", error);
+			}
+		}
+		loadRooms();
+	}, []);
+	
 	const visibleRooms = useMemo(() => ({
-		buildingRooms,
+		...buildingRooms,
 		features: buildingRooms.features.filter(
 			(room) => room.properties.level === selectedFloor,
 		),
 	}),
-	[selectedFloor],
+	[buildingRooms, selectedFloor],
 	);
 
 	function addRoomPopup(feature, layer) {
@@ -90,6 +124,9 @@ function Maps() {
 			`<strong>${feature.properties.name}</strong><br/>
 			Floor ${feature.properties.level}<br/>
 			${feature.properties.type}`);
+	}
+	function handleCoordinateChange(coordinate) {
+		console.log(`Map point: [${coordinate.x}, ${coordinate.y}]`);
 	}
 
 	return (
@@ -114,18 +151,19 @@ function Maps() {
 					})}
 				</div>
 			</header>
-
 			<MapContainer
 				crs={L.CRS.Simple}
 				bounds={mapBounds}
 				minZoom={-2}
-				maxZoom={3}
+				maxZoom={4}
 				maxBounds={mapBounds}
 				maxBoundsViscosity={1}
 				className="indoor-map"
 			>
-				<ImageOverlay key={'image-${selectedFloor}'} url={floorPlans[selectedFloor]} bounds={mapBounds} />
-				<GeoJSON key={'rooms-${selectedFloor}'} data={visibleRooms} style={{ color: "#172554", weight: 2, fillColor: "#3b82f6", fillOpacity: 0.2,}} onEachFeature={addRoomPopup} />
+				<ImageOverlay key={`image-${selectedFloor}`} url={floorPlans[selectedFloor]} bounds={mapBounds} />
+				<CoordinatePicker imageHeight={MAP_HEIGHT} onCoordinateChange={handleCoordinateChange} />
+				
+				<GeoJSON key={`rooms-${selectedFloor}-${visibleRooms.features.length}`} data={visibleRooms} style={(feature)=>({ color: "#172554", weight: 2, fillColor: feature.properties.type === "Classroom" ? "#da5400": feature.properties.type === "Meeting Room" ? "#f50b7c" : feature.properties.type === "Elevator" ? "#bd13db" : feature.properties.type === "Laboratory" ? "#73a880" : feature.properties.type === "Study Space" ? "#1b0bf1" : feature.properties.type === "Stairs" ? "#b0740e" : feature.properties.type === "Restroom" ? "#fbff00" : "#31a9e5", fillOpacity: 0.2,})} onEachFeature={addRoomPopup} />
 			</MapContainer>
 		</main>
 	);
