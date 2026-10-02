@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Directory from "./pages/Directory";
 import Guide from "./pages/Guide";
 import Maps from "./pages/Maps";
+import LightTest from "./pages/LightTest";
 
 import "./style.css";
 
@@ -15,6 +16,7 @@ function App() {
                 <Route path="/directory" element={<Directory />} />
                 <Route path="/guide" element={<Guide />} />
                 <Route path="/maps" element={<Maps />} />
+                <Route path="/lights" element={<LightTest />} />
             </Routes>
         </BrowserRouter>
     );
