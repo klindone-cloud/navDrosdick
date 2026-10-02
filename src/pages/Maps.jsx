@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import L from "leaflet";
 import {
 	GeoJSON,
@@ -8,6 +8,7 @@ import {
 } from "react-leaflet";
 import {useMapEvents} from "react-leaflet";
 import CoordinatePicker from "../components/CoordinatePicker";
+import { parseRoomsCSV} from "../data/createRooms";
 import "leaflet/dist/leaflet.css";
 
 const MAP_WIDTH = 1600;
@@ -21,7 +22,7 @@ const mapBounds = [
 const floorPlans = {
 	1: "/floors/DrosdickFirstFloor.png"
 };
-
+/*
 const buildingRooms = {
 	type: "FeatureCollection",
 	features: [
@@ -73,9 +74,37 @@ const buildingRooms = {
 		}
 	]
 };
+*/
+const emptyRooms = {
+	type: "FeatureCollection",
+	features: []
+};
 
 function Maps() {
 	const [selectedFloor, setSelectedFloor] = useState(1);
+	const [buildingRooms, setBuildingRooms] = useState(emptyRooms);
+
+	useEffect(() => {
+		async function loadRooms() {
+			try {
+				const response = await fetch("../data/FirstFloor.csv");
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+
+				const csvText = await response.text();
+				console.log("Loaded CSV text:", csvText);
+				const rooms = parseRoomsCSV(csvText, MAP_HEIGHT);
+
+				console.log("Parsed room data:", rooms);
+				setBuildingRooms(rooms);
+			} catch (error) {
+				console.error("Error loading room data:", error);
+			}
+		}
+		loadRooms();
+	}, []);
 	
 	const visibleRooms = useMemo(() => ({
 		...buildingRooms,
@@ -83,7 +112,7 @@ function Maps() {
 			(room) => room.properties.level === selectedFloor,
 		),
 	}),
-	[selectedFloor],
+	[buildingRooms, selectedFloor],
 	);
 
 	function addRoomPopup(feature, layer) {
@@ -127,10 +156,10 @@ function Maps() {
 				maxBoundsViscosity={1}
 				className="indoor-map"
 			>
-				<ImageOverlay key={'image-${selectedFloor}'} url={floorPlans[selectedFloor]} bounds={mapBounds} />
+				<ImageOverlay key={`image-${selectedFloor}`} url={floorPlans[selectedFloor]} bounds={mapBounds} />
 				<CoordinatePicker imageHeight={MAP_HEIGHT} onCoordinateChange={handleCoordinateChange} />
 				
-				{/*<GeoJSON key={'rooms-${selectedFloor}'} data={visibleRooms} style={{ color: "#172554", weight: 2, fillColor: "#3b82f6", fillOpacity: 0.2,}} onEachFeature={addRoomPopup} />*/}
+				<GeoJSON key={`rooms-${selectedFloor}-${visibleRooms.features.length}`} data={visibleRooms} style={(feature)=>({ color: "#172554", weight: 2, fillColor: feature.properties.type === "Stairs" ? "#f59e0b" : feature.properties.type === "Restroom" ? "#8b5cf6" : "#3b82f6", fillOpacity: 0.2,})} onEachFeature={addRoomPopup} />
 			</MapContainer>
 		</main>
 	);
