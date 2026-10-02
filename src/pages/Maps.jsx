@@ -94,6 +94,10 @@ function Maps() {
 				}
 
 				const csvText = await response.text();
+
+if (csvText.trimStart().startsWith("<")) {
+    throw new Error("Got HTML instead of CSV; check that the file is in public/data/");
+}
 				console.log("Loaded CSV text:", csvText);
 				const rooms = parseRoomsCSV(csvText, MAP_HEIGHT);
 
@@ -159,7 +163,7 @@ function Maps() {
 				<ImageOverlay key={`image-${selectedFloor}`} url={floorPlans[selectedFloor]} bounds={mapBounds} />
 				<CoordinatePicker imageHeight={MAP_HEIGHT} onCoordinateChange={handleCoordinateChange} />
 				
-				<GeoJSON key={`rooms-${selectedFloor}-${visibleRooms.features.length}`} data={visibleRooms} style={(feature)=>({ color: "#172554", weight: 2, fillColor: feature.properties.type === "Stairs" ? "#f59e0b" : feature.properties.type === "Restroom" ? "#8b5cf6" : "#3b82f6", fillOpacity: 0.2,})} onEachFeature={addRoomPopup} />
+				<GeoJSON key={`rooms-${selectedFloor}-${visibleRooms.features.length}`} data={visibleRooms} style={(feature)=>({ color: "#172554", weight: 2, fillColor: feature.properties.type === "Classroom" ? "#da5400": feature.properties.type === "Meeting Room" ? "#f50b7c" : feature.properties.type === "Elevator" ? "#bd13db" : feature.properties.type === "Laboratory" ? "#73a880" : feature.properties.type === "Study Space" ? "#1b0bf1" : feature.properties.type === "Stairs" ? "#b0740e" : feature.properties.type === "Restroom" ? "#fbff00" : "#31a9e5", fillOpacity: 0.2,})} onEachFeature={addRoomPopup} />
 			</MapContainer>
 		</main>
 	);

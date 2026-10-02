@@ -9,7 +9,9 @@ const coordinate_cols = [
     "p5",
 ];
 
-function parseCoordinate(value) {
+const FLIP_Y = true; // Set to true if the Y-axis needs to be flipped
+
+function parseCoordinate(value, MAP_HEIGHT) {
     console.log("Value", value);
     console.log(`Parsing coordinate: ${value}`);
     //check that there is a coordinate value
@@ -20,11 +22,15 @@ function parseCoordinate(value) {
     const parts = value.split(",");
 
     const imageX = Number(parts[0].trim());
-    const imageY = Number(parts[1].trim());
+    var imageY = Number(parts[1].trim());
 
     //check that the coordinate is valid
     if (!Number.isFinite(imageX) || !Number.isFinite(imageY)){
         throw new Error(`Invalid coordinate: ${value}`);
+    }
+
+    if (FLIP_Y) {
+        imageY = MAP_HEIGHT - imageY;
     }
 
     return [imageX, imageY];
@@ -44,7 +50,7 @@ export function parseRoomsCSV(csvText, mapHeight) {
         console.log(`Parsing row ${index+2}:`, row);
         const points = coordinate_cols.map((column) => {
             console.log("Column:", column);
-            return parseCoordinate(row[column]);
+            return parseCoordinate(row[column], mapHeight);
         });
 
         return {
@@ -55,9 +61,9 @@ export function parseRoomsCSV(csvText, mapHeight) {
             },
             properties: {
                 id: String(row.id),
-                name: row.location(),
+                name: String(row.location.trim()),
                 level: 1,
-                type: row.category.trim(),
+                type: String(row.category.trim()),
             },
         };
     });
