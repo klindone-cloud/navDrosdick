@@ -490,4 +490,83 @@ code {
   .indoor-map {
     height: 65vh;
   }
+
+  .map-wrapper {
+  position: relative;
+}
+
+.map-legend {
+  position: absolute;
+  z-index: 1000;
+  top: 16px;
+  right: 16px;
+  width: min(260px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 16px;
+  overflow-y: auto;
+  color: #172554;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.2);
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.legend-header h2 {
+  margin: 0 0 10px;
+  color: #172554;
+  font-size: 18px;
+}
+
+.legend-actions {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.legend-actions button {
+  padding: 5px 8px;
+  color: #172554;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.legend-actions button:hover {
+  background: #e2e8f0;
+}
+
+.legend-options {
+  display: grid;
+  gap: 8px;
+}
+
+.legend-option {
+  display: grid;
+  grid-template-columns: auto 14px 1fr;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.25);
+  border-radius: 3px;
+}
+
+@media (max-width: 720px) {
+  .map-legend {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    max-height: none;
+    margin-bottom: 12px;
+  }
+}
 }

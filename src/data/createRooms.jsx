@@ -63,6 +63,7 @@ export function parseRoomsCSV(csvText, mapHeight) {
                 id: String(row.id),
                 name: String(row.location.trim()),
                 level: 1,
+                description: String(row.locationnumber.trim()),
                 type: String(row.category.trim()),
             },
         };
