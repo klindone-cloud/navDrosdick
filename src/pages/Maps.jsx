@@ -9,7 +9,9 @@ import {
 import {useMapEvents} from "react-leaflet";
 import CoordinatePicker from "../components/CoordinatePicker";
 import {parseRoomsCSV} from "../data/createRooms";
+import Navbar from "../components/NavBar";
 import "leaflet/dist/leaflet.css";
+import "../css/maps.css";
 
 const MAP_WIDTH = 1600;
 const MAP_HEIGHT = 1000;
@@ -46,6 +48,10 @@ function getRoomColor(type) {
 	return ROOM_COLORS[type] ?? "#ffffff"; // Default color if type is not found
 }
 
+function normalizeRoomType(type) {
+	return String(type ?? "Unknown").trim();
+}
+
 function Maps() {
 	const [selectedFloor, setSelectedFloor] = useState(1);
 	const [buildingRooms, setBuildingRooms] = useState(emptyRooms);
@@ -56,6 +62,7 @@ function Maps() {
 
 		return [...new Set(types)].sort();
 	}, [buildingRooms]);
+
 
 	useEffect(() => {
 		async function loadRooms() {
@@ -82,7 +89,18 @@ if (csvText.trimStart().startsWith("<")) {
 		}
 		loadRooms();
 	}, []);
-	
+
+	const visibleRoomFeatures = useMemo(() => {
+		return buildingRooms.features.filter((room) => {
+			const roomType = normalizeRoomType(room.properties?.type);
+
+			const isOnSelectedFloor = room.properties?.level === selectedFloor;
+			const isTypeVisible = !hiddenTypes.has(roomType);
+
+			return isOnSelectedFloor && isTypeVisible;
+		});
+	},	[buildingRooms, selectedFloor, hiddenTypes]);
+	/*
 	const visibleRooms = useMemo(() => ({
 		...buildingRooms,
 		features: buildingRooms.features.filter(
@@ -92,16 +110,19 @@ if (csvText.trimStart().startsWith("<")) {
 	}),
 	[buildingRooms, selectedFloor],
 	);
+	*/
 
 	//toggles the visibility of a room type on the map
 	function toggleRoomType(type) {
-		setHiddenTypes((currentTypes) => {
-			const updatesTypes = new Set(currentTypes);
+		const normalizedType = normalizeRoomType(type);
 
-			if(updatedTypes.has(type)) {
-				updatedTypes.delete(type);
+		setHiddenTypes((currentTypes) => {
+			const updatedTypes = new Set(currentTypes);
+
+			if(updatedTypes.has(normalizedType)) {
+				updatedTypes.delete(normalizedType);
 			} else {
-				updatedTypes.add(type);
+				updatedTypes.add(normalizedType);
 			}
 
 			return updatedTypes;
@@ -130,11 +151,23 @@ if (csvText.trimStart().startsWith("<")) {
 		console.log(`Map point: [${coordinate.x}, ${coordinate.y}]`);
 	}
 
+	console.log("Hidden types:", [...hiddenTypes]);
+
+console.log(
+  "Visible rooms:",
+  visibleRoomFeatures.map((room) => ({
+    name: room.properties.name,
+    type: room.properties.type,
+  })),
+);
+
 	return (
 		<main className="maps-page">
+			<Navbar />
 			<header className="maps-header">
 				<div>
 					<h1>Drosdick Hall Map</h1>
+					<br/>
 					<p>Select a floor, then choose a room.</p>
 				</div>
 
@@ -164,13 +197,17 @@ if (csvText.trimStart().startsWith("<")) {
 					</div>
 
 					<div className="legend-options">
-						{roomTypes.map((type) => (
-							<label key={type} className="legend-option">
+						{roomTypes.map((normalizedType) => (
+							<label key={normalizedType} className="legend-option">
 								<input type="checkbox"
-									checked={!hiddenTypes.has(type)}
-									onChange={() => toggleRoomType(type)}
+									checked={!hiddenTypes.has(normalizedType)}
+									onChange={() => toggleRoomType(normalizedType)}
 									/>
-								<span className="legend-color" style={{ backgroundColor: getRoomColor(type) }}>{type}</span>
+								<span className="legend-color" style={{ backgroundColor: getRoomColor(normalizedType) }}/>
+
+								<span className="legend-text">
+									{normalizedType}
+								</span>
 							</label>
 						))}
 					</div>
@@ -186,8 +223,26 @@ if (csvText.trimStart().startsWith("<")) {
 			>
 				<ImageOverlay key={`image-${selectedFloor}`} url={floorPlans[selectedFloor]} bounds={mapBounds} />
 				<CoordinatePicker imageHeight={MAP_HEIGHT} onCoordinateChange={handleCoordinateChange} />
-				
-				<GeoJSON key={`rooms-${selectedFloor}-${visibleRooms.features.map((room) => room.properties.id).join('-')}`} data={visibleRooms} style={(feature)=>({ color: "#172554", weight: 2, fillColor: feature.properties.type === "Classroom" ? "#da5400": feature.properties.type === "Meeting Room" ? "#f50b7c" : feature.properties.type === "Elevator" ? "#bd13db" : feature.properties.type === "Laboratory" ? "#73a880" : feature.properties.type === "Study Space" ? "#1b0bf1" : feature.properties.type === "Stairs" ? "#b0740e" : feature.properties.type === "Restroom" ? "#fbff00" : (feature.properties.type === "Graduate Space" || feature.properties.type === "Administrative Offices") ? "#e01111" : "#31a9e5", fillOpacity: 0.2,})} onEachFeature={addRoomPopup} />
+			{visibleRoomFeatures.map((room) => {
+				const roomId = room.properties.id;
+				const roomType = normalizeRoomType(room.properties.type);
+
+				return (
+					<GeoJSON
+						key={`${selectedFloor}-${roomId}`}
+						data={room}
+						style={{
+							color: getRoomColor(roomType),
+							weight: 2,
+							fillColor: getRoomColor(roomType),
+							fillOpacity: 0.3,
+						}}
+						onEachFeature={addRoomPopup}
+					/>
+					);
+			})}
+			{/*
+				<GeoJSON key={`rooms-${selectedFloor}-${visibleRooms.features.map((room) => room.properties.id).join('-')}`} data={visibleRooms} style={(feature)=>({ color: "#172554", weight: 2, fillColor: feature.properties.type === "Classroom" ? "#da5400": feature.properties.type === "Meeting Room" ? "#f50b7c" : feature.properties.type === "Elevator" ? "#bd13db" : feature.properties.type === "Laboratory" ? "#73a880" : feature.properties.type === "Study Space" ? "#1b0bf1" : feature.properties.type === "Stairs" ? "#b0740e" : feature.properties.type === "Restroom" ? "#fbff00" : (feature.properties.type === "Graduate Space" || feature.properties.type === "Administrative Offices") ? "#e01111" : "#31a9e5", fillOpacity: 0.2,})} onEachFeature={addRoomPopup} />*/}
 			</MapContainer>
 			</div>
 		</main>

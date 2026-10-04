@@ -5,7 +5,7 @@ import Directory from "./pages/Directory";
 import Guide from "./pages/Guide";
 import Maps from "./pages/Maps";
 
-import "./style.css";
+import "./css/style.css";
 
 function App() {
     return (

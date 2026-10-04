@@ -1,0 +1,254 @@
+:root {
+    --text: #6b6375;
+  --text-h: #ffffff;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #080a71;
+  --accent-bg: rgba(148, 183, 253, 0.653);
+  --accent-border: rgba(15, 55, 185, 0.806);
+  --social-bg: rgba(244, 243, 236, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+.maps-page {
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  text-align: left;
+  background: #f8fafc;
+}
+
+/* Page header */
+
+.maps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding-top: 20px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+}
+
+.maps-header h1 {
+  margin: 0 0 6px;
+  color: var(--accent);
+}
+
+.maps-header p {
+  margin: 0;
+}
+
+/* Floor selector */
+
+.floor-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.floor-selector button {
+  padding: 9px 14px;
+  color: #172554;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+.floor-selector button:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.floor-selector button.active-floor {
+  color: #ffffff;
+  border-color: #1d4ed8;
+  background: #2563eb;
+}
+
+/* Map container */
+
+.map-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.indoor-map {
+  width: 100%;
+  height: min(72vh, 750px);
+  min-height: 500px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #e2e8f0;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+  cursor: crosshair;
+}
+
+/* Legend */
+
+.map-legend {
+  position: absolute;
+  z-index: 1000;
+  top: 16px;
+  right: 16px;
+  width: 250px;
+  max-height: calc(100% - 32px);
+  padding: 16px;
+  overflow-y: auto;
+  color: #172554;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 5px 18px rgba(231, 236, 247, 0.22);
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.legend-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.legend-header h2 {
+  margin: 0 0 10px;
+  color: #172554;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Show/hide buttons */
+
+.legend-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.legend-actions button {
+  flex: 1;
+  padding: 6px 8px;
+  color: #172554;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #f8fafc;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.legend-actions button:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+/* Legend options list */
+
+.legend-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+  margin-top: 12px;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.legend-option {
+  display: grid;
+  grid-template-columns: 18px 14px minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.25;
+  cursor: pointer;
+  user-select: none;
+}
+
+.legend-option:hover {
+  color: #0f172a;
+}
+
+.legend-option input {
+  width: 16px;
+  height: 16px;
+  margin: 1px 0 0;
+  accent-color:var(--border);
+  cursor: pointer;
+}
+
+.legend-color {
+position: static;
+display: inline-block;
+flex: 0 0 16px;
+  width: 32px;
+  height: 16px;
+  border: 1px solid rgba(57, 108, 228, 0.25);
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+/* Leaflet popups */
+
+.indoor-map .leaflet-popup-content {
+  min-width: 180px;
+  margin: 14px 18px;
+  color: #334155;
+  font-family: system-ui, sans-serif;
+  line-height: 1.4;
+}
+
+.indoor-map .leaflet-popup-content strong {
+  color: #172554;
+  font-size: 16px;
+}
+
+/* Tablet and mobile */
+
+@media (max-width: 720px) {
+  .maps-page {
+    padding: 14px;
+  }
+
+  .maps-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .map-legend {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    max-height: none;
+    margin-bottom: 12px;
+  }
+
+  .legend-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .indoor-map {
+    height: 65vh;
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 460px) {
+  .legend-options {
+    grid-template-columns: 1fr;
+  }
+
+  .indoor-map {
+    min-height: 350px;
+  }
+}
