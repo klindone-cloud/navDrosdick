@@ -15,6 +15,7 @@ function NavBar() {
                     <li className="nav-item"><Link to="/directory">Directory</Link></li>
                     <li className="nav-item"><Link to="/guide">Guide</Link></li>
                     <li className="nav-item"><Link to="/maps">Maps</Link></li>
+                    <li className="nav-item"><Link to="/lights">Light Test</Link></li>
                 </ul>
             </div>
         </nav>
