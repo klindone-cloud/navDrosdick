@@ -35,4 +35,10 @@ export async function sendCommand(cmd) {
     await cmdChar.writeValue(new TextEncoder().encode(text));
     return text;
 }
+
+let device = null;   // and drop "const" before device in connectNode
+
+export function disconnectNode() {
+    if (device && device.gatt.connected) device.gatt.disconnect();
+}
  
