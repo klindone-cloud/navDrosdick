@@ -22,7 +22,14 @@ const mapBounds = [
 ];
 
 const floorPlans = {
-	1: "/floors/DrosdickFirstFloor.png"
+	0: {
+		url: "/floors/DrosdickGroundFloor.png",
+		name: "Ground Floor"
+	},
+	1: {
+		url: "/floors/DrosdickFirstFloor.png",
+		name: "First Floor"
+	}
 };
 
 const emptyRooms = {
@@ -174,13 +181,12 @@ console.log(
 				<div className="floor-selector" aria-label="Choose a floor">
 					{Object.keys(floorPlans).map((floor) => {
 						const floorNumber = Number(floor);
-
 						return (
 							<button
 								key={floor} type="button"
 								className={selectedFloor === floorNumber ? "active-floor" : ""}
 								onClick={() => setSelectedFloor(floorNumber)}
-								> Floor {floor} </button>
+								> {floorPlans[floor].name} </button>
 						);
 					})}
 				</div>
@@ -221,7 +227,7 @@ console.log(
 				maxBoundsViscosity={1}
 				className="indoor-map"
 			>
-				<ImageOverlay key={`image-${selectedFloor}`} url={floorPlans[selectedFloor]} bounds={mapBounds} />
+				<ImageOverlay key={`image-${selectedFloor}`} url={floorPlans[selectedFloor].url} bounds={mapBounds} />
 				<CoordinatePicker imageHeight={MAP_HEIGHT} onCoordinateChange={handleCoordinateChange} />
 			{visibleRoomFeatures.map((room) => {
 				const roomId = room.properties.id;

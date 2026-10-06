@@ -8,6 +8,7 @@ function Guide() {
 		<div style = {{textAlign:"center"}}>
 			<h1>Guide</h1>
 			<p>Guide content will go here.</p>
+			<p>***This page is not part of the demo***</p>
 			<button style={{marginTop: "20px", backgroundColor: "#94b7fda7", borderRadius: "4px", width: "300px", height: "70px", border: "solid", borderColor: "#002884", borderWidth: "1px"}}><Link style={{color: "#ffffff", fontSize:"20px", textDecoration:"none"}} to="../"> Return to Home </Link></button>
 		</div>
 		</main>;
