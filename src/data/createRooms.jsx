@@ -74,3 +74,32 @@ export function parseRoomsCSV(csvText, mapHeight) {
         features,
     };
 };
+
+//use this for the directory
+export function parseCSV(value){
+    const result = Papa.parse(value, {
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: (header) => header.trim().toLowerCase(),
+    });
+
+    const features = result.data.map((row)=> {
+        return {
+            type: "Feature",
+            properties: {
+                id: String(row.id ?? "").trim(),
+                name: String(row.location ?? "").trim(),
+                locationNumber: String(
+                    row.locationnumber ?? "",
+                ).trim(),
+                level: 1,
+                type: String(row.category ?? "").trim(),
+            },
+        };
+    });
+
+    return {
+        type:"FeatureCollection",
+        features
+    }
+};

@@ -226,6 +226,7 @@ code {
   margin-bottom: 30px;
   font-size: 18px;
   color: rgba(255, 255, 255, 0.88);
+  font-family: var(--sans);
 }
 
 .hero-action {
@@ -366,6 +367,7 @@ code {
   padding: 32px;
   color: #475569;
   text-align: left;
+  font-family: var(--sans);
 }
 
 .carousel-text-content h2 {

@@ -1,0 +1,270 @@
+:root {
+    --text: #6b6375;
+  --text-h: #ffffff;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #080a71;
+  --accent-bg: #94b7fda7;
+  --accent-border: rgba(15, 55, 185, 0.806);
+  --social-bg: rgba(244, 243, 236, 0.5);
+    --shadow:
+        rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+}
+
+.directory-page {
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.directory-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 32px;
+  margin-top: 32px;
+}
+
+.directory-header h1 {
+  margin: 4px 0 10px;
+}
+
+.directory-kicker {
+  margin: 0;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.directory-description {
+  max-width: 620px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-top: 32px;
+}
+
+.directory-map-link {
+  flex: 0 0 auto;
+  padding: 10px 16px;
+  color: var(--accent);
+  border-radius: 7px;
+  background: var(--accent-bg);
+  font-weight: 650;
+  text-decoration: none;
+  border: 1px solid var(--accent);
+}
+
+.directory-map-link:hover {
+  background: #5376ea;
+}
+
+/* Search */
+
+.directory-search {
+  margin-bottom: 32px;
+}
+
+.directory-search label {
+  display: block;
+  margin-bottom: 8px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.search-input-wrapper:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px
+    rgba(37, 99, 235, 0.14);
+}
+
+.search-icon {
+  flex: 0 0 auto;
+  color: #64748b;
+  font-size: 22px;
+}
+
+.search-input-wrapper input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 0;
+  color: #0f172a;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+}
+
+.clear-search {
+  padding: 6px 8px;
+  color: #475569;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.clear-search:hover {
+  color: #1d4ed8;
+}
+
+/*Results*/
+.directory-results-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.directory-results-heading h2 {
+  margin: 0;
+}
+
+.directory-results-heading p {
+  color: #64748b;
+}
+
+.location-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.location-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;
+  padding: 20px;
+  border: 2px solid #d2deeb;
+  border-radius: 10px;
+  background: #f8f8f8;
+  box-shadow: 0 2px 7px
+    rgba(15, 23, 42, 0.06);
+  box-sizing: border-box;
+}
+
+.location-card:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 7px 20px
+    rgba(15, 23, 42, 0.3);
+}
+
+.location-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.location-card h3 {
+  margin: 4px 0 0;
+  color: #172554;
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.location-type {
+  margin: 0;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.location-number {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  color: #1e3a8a;
+  border-radius: 5px;
+  background: #dbeafe;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.location-description {
+  margin: 16px 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.location-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.location-card-footer a {
+  color: #1d4ed8;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.location-card-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Status messages */
+
+.directory-status,
+.directory-error,
+.no-directory-results {
+  padding: 32px;
+  border: 1px solid #dbe2ea;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.directory-error {
+  color: #991b1b;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.directory-error p {
+  margin-top: 6px;
+}
+
+.no-directory-results h2 {
+  margin: 0 0 8px;
+}
+
+.no-directory-results p {
+  color: #64748b;
+}
+
+.no-directory-results button {
+  margin-top: 18px;
+  padding: 9px 14px;
+  color: #ffffff;
+  border: 0;
+  border-radius: 6px;
+  background: #2563eb;
+  cursor: pointer;
+}

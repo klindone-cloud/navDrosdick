@@ -149,6 +149,32 @@
   background: #eff6ff;
 }
 
+/* Clear Location button */
+.clear-location {
+  display: flex;
+  padding-left: 400px;
+  padding-right: 400px;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.clear-location button {
+  flex: 1;
+  padding: 6px 8px;
+  color: #172554;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #f8fafc;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.clear-location button:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
 /* Legend options list */
 
 .legend-options {

@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
+import { useSearchParams } from "react-router-dom";
 import {
 	GeoJSON,
 	ImageOverlay,
 	MapContainer,
 	Popup,
+	useMap,
 } from "react-leaflet";
 import {useMapEvents} from "react-leaflet";
 import CoordinatePicker from "../components/CoordinatePicker";
@@ -59,10 +61,57 @@ function normalizeRoomType(type) {
 	return String(type ?? "Unknown").trim();
 }
 
+function RoomLayer({
+	room,
+	selected,
+	getRoomColor,
+	addRoomPopup,
+}) {
+	const layerRef = useRef(null);
+	const map = useMap();
+
+	const roomType = room.properties?.type ?? "Unknown";
+
+	useEffect(() => {
+		if (!selected || !layerRef.current) {
+			return;
+		}
+
+		const roomLayer = layerRef.current;
+		const bounds = roomLayer.getBounds();
+
+		map.fitBounds(bounds, {
+			padding: [80, 80],
+			maxZoom: 2,
+			animate: true,
+		});
+
+		roomLayer.eachLayer((layer) => {
+			layer.openPopup();
+		});
+	}, [selected, map]);
+
+	return(
+		<GeoJSON
+			ref={layerRef}
+			data={room}
+			style={{
+				color: getRoomColor(roomType),
+				weight: 2,
+				fillColor: getRoomColor(roomType),
+				fillOpacity: 0.3,
+			}}
+			onEachFeature={addRoomPopup}
+		/>
+	);
+}
+
 function Maps() {
 	const [selectedFloor, setSelectedFloor] = useState(1);
 	const [buildingRooms, setBuildingRooms] = useState(emptyRooms);
 	const [hiddenTypes, setHiddenTypes] = useState(new Set());
+	const [searchParams,setSearchParams] = useSearchParams();
+	const selectedRoomId = searchParams.get("room");
 
 	const roomTypes = useMemo(() => {
 		const types = buildingRooms.features.map((room) => room.properties.type);
@@ -71,6 +120,21 @@ function Maps() {
 	}, [buildingRooms]);
 
 
+	useEffect(() => {
+		if(!selectedRoomId) {
+			return;
+		}
+
+		const selectedRoom = buildingRooms.features.find(
+			(room) => String(room.properties.id) === String(selectedRoomId),
+		);
+
+		if (selectedRoom) {
+			setSelectedFloor(
+				Number(selectedRoom.properties.level),
+			);
+		}
+	}, [buildingRooms, selectedRoomId]);
 	useEffect(() => {
 		async function loadRooms() {
 			try {
@@ -99,14 +163,20 @@ if (csvText.trimStart().startsWith("<")) {
 
 	const visibleRoomFeatures = useMemo(() => {
 		return buildingRooms.features.filter((room) => {
-			const roomType = normalizeRoomType(room.properties?.type);
+			const roomId = String(room.properties.id);
+			const roomType = normalizeRoomType(room.properties.type);
 
-			const isOnSelectedFloor = room.properties?.level === selectedFloor;
-			const isTypeVisible = !hiddenTypes.has(roomType);
+			const correctFloor = Number(room.properties.level) === selectedFloor;
 
-			return isOnSelectedFloor && isTypeVisible;
+			const isSelected = roomId === String(selectedRoomId);
+
+			const typeIsVisible = !hiddenTypes.has(roomType);
+
+			return (
+				correctFloor && (isSelected || typeIsVisible)
+			);
 		});
-	},	[buildingRooms, selectedFloor, hiddenTypes]);
+	},	[buildingRooms, selectedFloor, hiddenTypes, selectedRoomId,]);
 	/*
 	const visibleRooms = useMemo(() => ({
 		...buildingRooms,
@@ -142,16 +212,30 @@ if (csvText.trimStart().startsWith("<")) {
 
 	function hideAllRoomTypes() {
 		setHiddenTypes(new Set(roomTypes));
+
+		//remove the selected room from the url
+		const updatedParams = new URLSearchParams(searchParams,);
+
+		updatedParams.delete("room");
+
+		setSearchParams(updatedParams, {
+			replace: true,
+		});
 	}
 
 	//creates overlay popups for each room on the map
 	function addRoomPopup(feature, layer) {
-		console.log(`Description:${feature.properties.description}`);
+		const properties = feature?.properties ?? {};
+		const name = properties.name || "Unnamed location";
+		const roomNumber = properties.locationNumber || "";
+		const type = properties.type || "Unknown";
+		const level = floorPlans[properties.level].name || "";
+
 		layer.bindPopup(
-			`<strong>${feature.properties.name}</strong><br/>
-			Floor ${feature.properties.level}<br/>
-			Location: ${feature.properties.description}<br/>
-			${feature.properties.type}`);
+			`<strong>${name}</strong><br/>
+			Floor ${level}<br/>
+			Location: ${roomNumber}<br/>
+			${type}`);
 	}
 	//prints coordinates of the point clicked on the map to the console
 	function handleCoordinateChange(coordinate) {
@@ -217,6 +301,9 @@ console.log(
 							</label>
 						))}
 					</div>
+						<div className="clear-location">
+							<button type="button" onClick={hideAllRoomTypes}>Clear Room Location</button>
+						</div>
 				</aside>
 			<MapContainer
 				crs={L.CRS.Simple}
@@ -229,12 +316,14 @@ console.log(
 			>
 				<ImageOverlay key={`image-${selectedFloor}`} url={floorPlans[selectedFloor].url} bounds={mapBounds} />
 				<CoordinatePicker imageHeight={MAP_HEIGHT} onCoordinateChange={handleCoordinateChange} />
-			{visibleRoomFeatures.map((room) => {
-				const roomId = room.properties.id;
-				const roomType = normalizeRoomType(room.properties.type);
+				{visibleRoomFeatures.map((room) => {
+					const roomId = String(room.properties.id);
 
-				return (
-					<GeoJSON
+					return (
+						<RoomLayer key={`${selectedFloor}-${roomId}`} room={room} selected={roomId === String(selectedRoomId)}
+					getRoomColor={getRoomColor}
+					addRoomPopup={addRoomPopup}/>
+					/*<GeoJSON
 						key={`${selectedFloor}-${roomId}`}
 						data={room}
 						style={{
@@ -244,11 +333,9 @@ console.log(
 							fillOpacity: 0.3,
 						}}
 						onEachFeature={addRoomPopup}
-					/>
+					/>*/
 					);
-			})}
-			{/*
-				<GeoJSON key={`rooms-${selectedFloor}-${visibleRooms.features.map((room) => room.properties.id).join('-')}`} data={visibleRooms} style={(feature)=>({ color: "#172554", weight: 2, fillColor: feature.properties.type === "Classroom" ? "#da5400": feature.properties.type === "Meeting Room" ? "#f50b7c" : feature.properties.type === "Elevator" ? "#bd13db" : feature.properties.type === "Laboratory" ? "#73a880" : feature.properties.type === "Study Space" ? "#1b0bf1" : feature.properties.type === "Stairs" ? "#b0740e" : feature.properties.type === "Restroom" ? "#fbff00" : (feature.properties.type === "Graduate Space" || feature.properties.type === "Administrative Offices") ? "#e01111" : "#31a9e5", fillOpacity: 0.2,})} onEachFeature={addRoomPopup} />*/}
+				})}
 			</MapContainer>
 			</div>
 		</main>
