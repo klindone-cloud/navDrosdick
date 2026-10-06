@@ -8,10 +8,10 @@ function Hero({ title, description, image }) {
             <div className="hero-copy">
                 <h1 id="hero-title">{title}</h1>
                 <p className="hero-description">{description}</p>
-                <a className="hero-action" href="#resources">
+                {/*<a className="hero-action" href="#resources">
                     Explore resources
                     <span aria-hidden="true">-&gt;</span>
-                </a>
+                </a>*/}
             </div>
         </section>
     );
