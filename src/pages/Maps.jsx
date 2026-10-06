@@ -227,7 +227,7 @@ if (csvText.trimStart().startsWith("<")) {
 	function addRoomPopup(feature, layer) {
 		const properties = feature?.properties ?? {};
 		const name = properties.name || "Unnamed location";
-		const roomNumber = properties.locationNumber || "";
+		const roomNumber = properties.description || "";
 		const type = properties.type || "Unknown";
 		const level = floorPlans[properties.level].name || "";
 
