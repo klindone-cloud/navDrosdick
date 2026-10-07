@@ -233,7 +233,7 @@ if (csvText.trimStart().startsWith("<")) {
 
 		layer.bindPopup(
 			`<strong>${name}</strong><br/>
-			Floor ${level}<br/>
+			Floor: ${level}<br/>
 			Location: ${roomNumber}<br/>
 			${type}`);
 	}
