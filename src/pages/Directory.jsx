@@ -44,7 +44,7 @@ function Directory() {
                 setError("");
 
                 const response = await fetch(
-                    "data/FirstFloor.csv",
+                    "data/FirstFloor2.csv",
                     {
                         signal: controller.signal,
                     },
@@ -57,10 +57,13 @@ function Directory() {
                 }
 
                 const csvText = await response.text();
+                
 
                 const parsedRooms = parseCSV(
                     csvText
                 );
+
+                console.log("Loading csv: ", parsedRooms);
 
                 //checks to see if html was returned instead of csv data
                 if (csvText.trimStart().startsWith("<")) {
@@ -99,8 +102,9 @@ function Directory() {
         if(!normalizedQuery){
             return locations;
         }
-
+        console.log(locations);
         return locations.filter((location) => {
+            console.log(location);
             const searchableText = [
                 location.name,
                 location.locationNumber,
