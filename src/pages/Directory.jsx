@@ -63,8 +63,6 @@ function Directory() {
                     csvText
                 );
 
-                console.log("Loading csv: ", parsedRooms);
-
                 //checks to see if html was returned instead of csv data
                 if (csvText.trimStart().startsWith("<")) {
                     throw new Error (

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
+//temp add
+import {supabase} from "../lib/supabaseClient";
 import { useSearchParams } from "react-router-dom";
 import {
 	GeoJSON,
@@ -107,11 +109,16 @@ function RoomLayer({
 }
 
 function Maps() {
+	//state declarations
 	const [selectedFloor, setSelectedFloor] = useState(1);
 	const [buildingRooms, setBuildingRooms] = useState(emptyRooms);
 	const [hiddenTypes, setHiddenTypes] = useState(new Set());
 	const [searchParams,setSearchParams] = useSearchParams();
 	const selectedRoomId = searchParams.get("room");
+	//supabase add
+	const [buildings, setBuildings] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const building = buildings[0];
 
 	const roomTypes = useMemo(() => {
 		const types = buildingRooms.features.map((room) => room.properties.type);
@@ -119,7 +126,26 @@ function Maps() {
 		return [...new Set(types)].sort();
 	}, [buildingRooms]);
 
+	//supbase add
+	useEffect(() => {
+		async function testSupabase() {
+			const { data, error } = await supabase.from("buildings").select("*");
 
+			console.log("Supabase buildings data:", data);
+			console.log("Supabase buildings error:", error);
+
+			if (error) {
+				console.error("Supabase connection failed: ", error,);
+				setLoading(false);
+				return;
+			}
+
+			console.log("Supabase buildings:", data,);
+			setBuildings(data);
+			setLoading(false);
+		}
+		testSupabase();
+	}, []);
 	useEffect(() => {
 		if(!selectedRoomId) {
 			return;
@@ -257,7 +283,8 @@ console.log(
 			<Navbar />
 			<header className="maps-header">
 				<div>
-					<h1>Drosdick Hall Map</h1>
+					//load building name from supabase
+					<h1>{loading ? "Loading building..." : `${building?.name ?? "Building"} Map`}</h1>
 					<br/>
 					<p>Select a floor, then choose a room.</p>
 				</div>
